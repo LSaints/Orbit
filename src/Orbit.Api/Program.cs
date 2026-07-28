@@ -5,7 +5,8 @@ using Microsoft.IdentityModel.Tokens;
 using Orbit.Api.Endpoints;
 using Orbit.Application.Services.Interfaces;
 using Orbit.Infrastructure.Data;
-using Orbit.Infrastructure.Services;
+using Orbit.Application.Services.Implementations;
+using Orbit.Infrastructure.Storage;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -47,7 +48,7 @@ builder.Services.AddCors(options =>
 });
 
 var uploadsPath = Path.Combine("wwwroot", "uploads");
-var localStorage = new LocalFileStorageService(uploadsPath);
+var localStorage = new LocalFileStorage(uploadsPath);
 builder.Services.AddSingleton<IFileStorageService>(localStorage);
 builder.Services.AddSingleton(localStorage);
 

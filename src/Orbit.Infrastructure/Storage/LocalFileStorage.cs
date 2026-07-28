@@ -1,12 +1,10 @@
-using Orbit.Application.Services.Interfaces;
+namespace Orbit.Infrastructure.Storage;
 
-namespace Orbit.Infrastructure.Services;
-
-public class LocalFileStorageService : IFileStorageService
+public class LocalFileStorage : IFileStorageService
 {
     private readonly string _basePath;
 
-    public LocalFileStorageService(string basePath)
+    public LocalFileStorage(string basePath)
     {
         _basePath = basePath;
         Directory.CreateDirectory(_basePath);

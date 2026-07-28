@@ -11,4 +11,24 @@
       <Folder Include="Services\Interfaces\" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Reference Include="BCrypt.Net-Next">
+        <HintPath>..\..\..\..\.nuget\packages\bcrypt.net-next\4.1.0\lib\net10.0\BCrypt.Net-Next.dll</HintPath>
+      </Reference>
+      <Reference Include="Microsoft.Extensions.Configuration.Abstractions">
+        <HintPath>..\..\..\..\.nuget\packages\microsoft.extensions.configuration.abstractions\10.0.0\lib\net10.0\Microsoft.Extensions.Configuration.Abstractions.dll</HintPath>
+      </Reference>
+      <Reference Include="Microsoft.IdentityModel.Tokens">
+        <HintPath>..\..\..\..\.nuget\packages\microsoft.identitymodel.tokens\8.0.1\lib\net9.0\Microsoft.IdentityModel.Tokens.dll</HintPath>
+      </Reference>
+      <Reference Include="System.IdentityModel.Tokens.Jwt">
+        <HintPath>..\..\..\..\.nuget\packages\system.identitymodel.tokens.jwt\8.0.1\lib\net9.0\System.IdentityModel.Tokens.Jwt.dll</HintPath>
+      </Reference>
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Orbit.Core\Orbit.Core.csproj" />
+      <ProjectReference Include="..\Orbit.Infrastructure\Orbit.Infrastructure.csproj" />
+    </ItemGroup>
+
 </Project>

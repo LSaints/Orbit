@@ -4,7 +4,7 @@ using Orbit.Application.Responses.Perfil;
 using Orbit.Application.Services.Interfaces;
 using Orbit.Infrastructure.Data;
 
-namespace Orbit.Infrastructure.Services;
+namespace Orbit.Application.Services.Implementations;
 
 public class PerfilService : IPerfilService
 {

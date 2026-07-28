@@ -4,8 +4,9 @@ using Orbit.Application.Responses.Postagem;
 using Orbit.Application.Services.Interfaces;
 using Orbit.Core.Domain;
 using Orbit.Infrastructure.Data;
+using Orbit.Infrastructure.Storage;
 
-namespace Orbit.Infrastructure.Services;
+namespace Orbit.Application.Services.Implementations;
 
 public class PostagemService : IPostagemService
 {
@@ -204,8 +205,10 @@ public class PostagemService : IPostagemService
             p.Id,
             p.UsuarioId,
             p.Descricao,
-            p.Medias.Select(m => new PostagemMediaResponse(m.Id, m.Url, m.Tipo)).ToList(),
-            p.Categorias.Select(c => new PostagemCategoriaResponse(c.Id, c.Descricao)).ToList(),
+            p.Medias.Select(m => 
+                new PostagemMediaResponse(m.Id, m.Url, m.Tipo)).ToList(),
+            p.Categorias.Select(c => 
+                new PostagemCategoriaResponse(c.Id, c.Descricao)).ToList(),
             p.DataCriacao,
             p.DataAtualizacao
         );

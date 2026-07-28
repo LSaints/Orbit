@@ -2,7 +2,7 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Orbit.Application.Requests.Postagem;
 using Orbit.Application.Services.Interfaces;
-using Orbit.Infrastructure.Services;
+using Orbit.Application.Services.Implementations;
 
 namespace Orbit.Api.Endpoints;
 

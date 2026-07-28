@@ -10,11 +10,11 @@ using Orbit.Application.Services.Interfaces;
 using Orbit.Core.Domain;
 using Orbit.Infrastructure.Data;
 
-namespace Orbit.Infrastructure.Services;
+namespace Orbit.Application.Services.Implementations;
 
 public class AuthService : IAuthService
 {
-    private readonly OrbitDbContext _context;
+    private readonly OrbitDbContext  _context;
     private readonly IConfiguration _configuration;
 
     public AuthService(OrbitDbContext context, IConfiguration configuration)

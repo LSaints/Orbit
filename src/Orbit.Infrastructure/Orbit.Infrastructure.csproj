@@ -16,7 +16,6 @@
 
     <ItemGroup>
         <ProjectReference Include="..\Orbit.Core\Orbit.Core.csproj" />
-        <ProjectReference Include="..\Orbit.Application\Orbit.Application.csproj" />
     </ItemGroup>
 
 </Project>

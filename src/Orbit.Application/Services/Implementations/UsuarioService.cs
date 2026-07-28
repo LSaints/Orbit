@@ -5,7 +5,7 @@ using Orbit.Application.Services.Interfaces;
 using Orbit.Core.Domain;
 using Orbit.Infrastructure.Data;
 
-namespace Orbit.Infrastructure.Services;
+namespace Orbit.Application.Services.Implementations;
 
 public class UsuarioService : IUsuarioService
 {

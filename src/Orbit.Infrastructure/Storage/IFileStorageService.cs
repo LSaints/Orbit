@@ -1,4 +1,4 @@
-namespace Orbit.Application.Services.Interfaces;
+namespace Orbit.Infrastructure.Storage;
 
 public interface IFileStorageService
 {
