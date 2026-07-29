@@ -11,6 +11,7 @@ public class OrbitDbContext : DbContext
     public DbSet<Postagem> Postagens => Set<Postagem>();
     public DbSet<PostagemMedia> PostagemMedias => Set<PostagemMedia>();
     public DbSet<PostagemCategoria> PostagemCategorias => Set<PostagemCategoria>();
+    public DbSet<PostagensEventos> PostagensEventos => Set<PostagensEventos>();
 
     public OrbitDbContext(DbContextOptions<OrbitDbContext> options) : base(options)
     {

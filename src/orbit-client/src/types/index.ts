@@ -52,6 +52,15 @@ export interface PostagemCategoriaResponse {
   descricao: string
 }
 
+export interface PostagemEventoResponse {
+  id: string
+  postagemId: string
+  usuarioId: string
+  tipoEventoPostagem: 'Curtir' | 'Descutir'
+  usuario: UsuarioResponse
+  dataEmissao: string
+}
+
 export interface PostagemResponse {
   id: string
   usuarioId: string

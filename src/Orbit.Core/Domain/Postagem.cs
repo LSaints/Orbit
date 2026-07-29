@@ -7,6 +7,7 @@ public class Postagem
     public string? Descricao { get; set; }
     public List<PostagemMedia> Medias { get; set; } = [];
     public List<PostagemCategoria> Categorias { get; set; } = [];
+    public List<PostagensEventos> Eventos { get; set; } = [];
     public DateTime DataCriacao { get; init; }
     public DateTime DataAtualizacao { get; set; }
 

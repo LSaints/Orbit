@@ -57,6 +57,7 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IPerfilService, PerfilService>();
 builder.Services.AddScoped<IPerfilImagemService, PerfilImagemService>();
 builder.Services.AddScoped<IPostagemService, PostagemService>();
+builder.Services.AddScoped<IPostagemEventoService, PostagemEventoService>();
 builder.Services.AddAntiforgery();
 
 var app = builder.Build();
@@ -82,5 +83,6 @@ app.MapAuthEndpoints();
 app.MapUsuarioEndpoints();
 app.MapPerfilEndpoints();
 app.MapPostagemEndpoints();
+app.MapPostagemEventoEndpoints();
 
 app.Run();

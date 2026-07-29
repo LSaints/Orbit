@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import { postagensService } from '@/api/postagens'
+import { postagensEventosService } from '@/api/postagensEventos'
 import { useAuth } from '@/contexts/AuthContext'
 import type { PostagemResponse } from '@/types'
 import { MediaCarousel } from '@/components/MediaCarousel'
@@ -12,11 +13,22 @@ export function PostDetailPage() {
   const [post, setPost] = useState<PostagemResponse | null>(null)
   const [loading, setLoading] = useState(true)
   const [expanded, setExpanded] = useState(false)
+  const [curtidas, setCurtidas] = useState(0)
+  const [descurtidas, setDescurtidas] = useState(0)
+  const [meuEvento, setMeuEvento] = useState<'Curtir' | 'Descutir' | null>(null)
+  const [loadingEvento, setLoadingEvento] = useState(false)
 
   useEffect(() => {
     if (!id) return
-    postagensService.getById(id).then((data) => {
-      setPost(data)
+    Promise.all([
+      postagensService.getById(id),
+      postagensEventosService.getEventos(id),
+      postagensEventosService.getMeuEvento(id),
+    ]).then(([postData, eventos, meu]) => {
+      setPost(postData)
+      setCurtidas(eventos.filter((e) => e.tipoEventoPostagem === 'Curtir').length)
+      setDescurtidas(eventos.filter((e) => e.tipoEventoPostagem === 'Descutir').length)
+      setMeuEvento(meu?.tipoEventoPostagem ?? null)
       setLoading(false)
     })
   }, [id])
@@ -25,6 +37,27 @@ export function PostDetailPage() {
     if (!id || !confirm('Excluir esta postagem?')) return
     await postagensService.remove(id)
     navigate('/feed')
+  }
+
+  const handleToggle = async () => {
+    if (!id || loadingEvento) return
+    setLoadingEvento(true)
+    try {
+      if (meuEvento === 'Curtir') {
+        await postagensEventosService.descutir(id)
+        setDescurtidas((c) => c + 1)
+        setMeuEvento('Descutir')
+      } else if (meuEvento === 'Descutir') {
+        await postagensEventosService.curtir(id)
+        setCurtidas((c) => c + 1)
+        setMeuEvento('Curtir')
+      } else {
+        await postagensEventosService.curtir(id)
+        setCurtidas((c) => c + 1)
+        setMeuEvento('Curtir')
+      }
+    } catch { }
+    setLoadingEvento(false)
   }
 
   if (loading) {
@@ -92,6 +125,21 @@ export function PostDetailPage() {
           ))}
         </div>
       )}
+
+      <div className="flex items-center gap-4 border-t border-zinc-800 pt-3">
+        <button
+          onClick={handleToggle}
+          disabled={loadingEvento}
+          className={`flex items-center gap-1.5 text-sm transition-colors ${
+            meuEvento === 'Curtir' ? 'text-emerald-400' : 'text-zinc-500 hover:text-emerald-400'
+          }`}
+        >
+          <svg className="h-5 w-5" fill={meuEvento === 'Curtir' ? 'currentColor' : 'none'} viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3H14z" />
+          </svg>
+          <span>{curtidas - descurtidas}</span>
+        </button>
+      </div>
     </div>
   )
 }

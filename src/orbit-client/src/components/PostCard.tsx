@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { perfilService } from '@/api/perfil'
+import { postagensEventosService } from '@/api/postagensEventos'
 import type { PostagemResponse } from '@/types'
 import { MediaCarousel } from '@/components/MediaCarousel'
 
@@ -21,12 +22,48 @@ export function PostCard({ post }: { post: PostagemResponse }) {
   const navigate = useNavigate()
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
   const [expanded, setExpanded] = useState(false)
+  const [curtidas, setCurtidas] = useState(0)
+  const [descurtidas, setDescurtidas] = useState(0)
+  const [meuEvento, setMeuEvento] = useState<'Curtir' | 'Descutir' | null>(null)
+  const [loadingEvento, setLoadingEvento] = useState(false)
 
   useEffect(() => {
     perfilService.getById(post.usuarioId).then((p) => {
       if (p.urlImagemPerfil) setAvatarUrl(p.urlImagemPerfil)
     }).catch(() => {})
   }, [post.usuarioId])
+
+  useEffect(() => {
+    Promise.all([
+      postagensEventosService.getEventos(post.id),
+      postagensEventosService.getMeuEvento(post.id),
+    ]).then(([eventos, meu]) => {
+      setCurtidas(eventos.filter((e) => e.tipoEventoPostagem === 'Curtir').length)
+      setDescurtidas(eventos.filter((e) => e.tipoEventoPostagem === 'Descutir').length)
+      setMeuEvento(meu?.tipoEventoPostagem ?? null)
+    }).catch(() => {})
+  }, [post.id])
+
+  const handleToggle = async () => {
+    if (loadingEvento) return
+    setLoadingEvento(true)
+    try {
+      if (meuEvento === 'Curtir') {
+        await postagensEventosService.descutir(post.id)
+        setDescurtidas((c) => c + 1)
+        setMeuEvento('Descutir')
+      } else if (meuEvento === 'Descutir') {
+        await postagensEventosService.curtir(post.id)
+        setCurtidas((c) => c + 1)
+        setMeuEvento('Curtir')
+      } else {
+        await postagensEventosService.curtir(post.id)
+        setCurtidas((c) => c + 1)
+        setMeuEvento('Curtir')
+      }
+    } catch { }
+    setLoadingEvento(false)
+  }
 
   return (
     <article className="rounded-xl border border-zinc-800 bg-zinc-900/50 p-4">
@@ -77,6 +114,21 @@ export function PostCard({ post }: { post: PostagemResponse }) {
           ))}
         </div>
       )}
+
+      <div className="mt-3 flex items-center gap-4 border-t border-zinc-800 pt-3">
+        <button
+          onClick={handleToggle}
+          disabled={loadingEvento}
+          className={`flex items-center gap-1.5 text-sm transition-colors ${
+            meuEvento === 'Curtir' ? 'text-emerald-400' : 'text-zinc-500 hover:text-emerald-400'
+          }`}
+        >
+          <svg className="h-5 w-5" fill={meuEvento === 'Curtir' ? 'currentColor' : 'none'} viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3H14z" />
+          </svg>
+          <span>{curtidas - descurtidas}</span>
+        </button>
+      </div>
     </article>
   )
 }
