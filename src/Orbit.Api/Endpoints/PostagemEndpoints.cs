@@ -60,6 +60,41 @@ public static class PostagemEndpoints
             return deleted ? Results.NoContent() : Results.NotFound();
         });
 
+        group.MapPost("/{id:guid}/medias", async (Guid id, HttpContext httpContext, ClaimsPrincipal user, IPostagemService service) =>
+        {
+            var usuarioId = Guid.Parse(user.FindFirstValue(ClaimTypes.NameIdentifier)!);
+
+            var form = await httpContext.Request.ReadFormAsync();
+            var files = form.Files;
+
+            if (files.Count == 0)
+                return Results.BadRequest(new { error = "Nenhum arquivo enviado" });
+
+            var medias = new List<(Stream FileStream, string FileName, string ContentType)>();
+            foreach (var file in files)
+            {
+                if (file.Length == 0)
+                {
+                    foreach (var (stream, _, _) in medias) stream.Dispose();
+                    return Results.BadRequest(new { error = "Arquivo vazio" });
+                }
+
+                if (!PostagemService.IsValidMediaType(file.ContentType))
+                {
+                    foreach (var (stream, _, _) in medias) stream.Dispose();
+                    return Results.BadRequest(new { error = $"Tipo não permitido: {file.ContentType}" });
+                }
+
+                medias.Add((file.OpenReadStream(), file.FileName, file.ContentType));
+            }
+
+            var postagem = await service.UploadMediasAsync(usuarioId, id, medias);
+
+            foreach (var (stream, _, _) in medias) stream.Dispose();
+
+            return postagem is not null ? Results.Ok(postagem) : Results.NotFound();
+        }).DisableAntiforgery();
+
         group.MapPost("/{id:guid}/media", async (Guid id, IFormFile file, ClaimsPrincipal user, IPostagemService service) =>
         {
             var usuarioId = Guid.Parse(user.FindFirstValue(ClaimTypes.NameIdentifier)!);

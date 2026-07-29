@@ -47,6 +47,15 @@ export const postagensService = {
     return res.data
   },
 
+  async uploadMedias(postagemId: string, files: File[]): Promise<PostagemResponse> {
+    const form = new FormData()
+    files.forEach((f) => form.append('files', f))
+    const res = await api.post<PostagemResponse>(`/postagens/${postagemId}/medias`, form, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    })
+    return res.data
+  },
+
   async removeMedia(postagemId: string, mediaId: string): Promise<void> {
     await api.delete(`/postagens/${postagemId}/media/${mediaId}`)
   },

@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { perfilService } from '@/api/perfil'
 import type { PostagemResponse } from '@/types'
+import { MediaCarousel } from '@/components/MediaCarousel'
 
 const API_BASE = 'http://localhost:5033'
 
@@ -17,8 +18,9 @@ function timeAgo(dateStr: string) {
 }
 
 export function PostCard({ post }: { post: PostagemResponse }) {
+  const navigate = useNavigate()
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
-  const firstMedia = post.medias[0]
+  const [expanded, setExpanded] = useState(false)
 
   useEffect(() => {
     perfilService.getById(post.usuarioId).then((p) => {
@@ -42,23 +44,28 @@ export function PostCard({ post }: { post: PostagemResponse }) {
         <span className="text-xs text-zinc-500">{timeAgo(post.dataCriacao)}</span>
       </div>
 
-      {post.descricao && (
-        <p className="mb-3 whitespace-pre-wrap text-sm text-zinc-300">{post.descricao}</p>
+      {post.medias.length > 0 && (
+        <MediaCarousel medias={post.medias} onTap={() => navigate(`/postagens/${post.id}`)} />
       )}
 
-      {firstMedia && (
-        <Link to={`/postagens/${post.id}`} className="block overflow-hidden rounded-lg">
-          {firstMedia.tipo === 'video' ? (
-            <video src={`${API_BASE}/${firstMedia.url}`} className="w-full rounded-lg" controls />
-          ) : (
-            <img
-              src={`${API_BASE}/${firstMedia.url}`}
-              alt={post.descricao ?? ''}
-              className="w-full rounded-lg object-cover"
-              loading="lazy"
-            />
+      {post.descricao && (
+        <div className="mt-3 overflow-hidden">
+          <p
+            className={`whitespace-pre-wrap break-words text-sm text-zinc-300 ${
+              !expanded ? 'line-clamp-3' : ''
+            }`}
+          >
+            {post.descricao}
+          </p>
+          {post.descricao.length > 150 && (
+            <button
+              onClick={() => setExpanded(!expanded)}
+              className="mt-1 text-xs text-zinc-500 hover:text-zinc-300"
+            >
+              {expanded ? 'ver menos' : 'ver mais'}
+            </button>
           )}
-        </Link>
+        </div>
       )}
 
       {post.categorias.length > 0 && (

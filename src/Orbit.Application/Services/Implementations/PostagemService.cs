@@ -142,6 +142,33 @@ public class PostagemService : IPostagemService
         return true;
     }
 
+    public async Task<PostagemResponse?> UploadMediasAsync(Guid usuarioId, Guid postagemId, IReadOnlyList<(Stream FileStream, string FileName, string ContentType)> medias)
+    {
+        var postagem = await _context.Postagens
+            .Include(p => p.Usuario)
+            .FirstOrDefaultAsync(p => p.Id == postagemId && p.UsuarioId == usuarioId);
+
+        if (postagem is null) return null;
+
+        foreach (var (fileStream, fileName, contentType) in medias)
+        {
+            var tipo = GetMediaType(contentType);
+            var ext = Path.GetExtension(fileName);
+            var mediaId = Guid.NewGuid();
+            var objectName = $"{usuarioId}/postagens/{postagemId}/{mediaId}{ext}";
+
+            await _storageService.UploadAsync("", objectName, fileStream, contentType);
+
+            var url = _storageService.GetObjectUrl(objectName);
+            var media = new PostagemMedia(postagemId, url, tipo);
+            await _context.PostagemMedias.AddAsync(media);
+        }
+
+        await _context.SaveChangesAsync();
+
+        return await GetByIdAsync(postagemId);
+    }
+
     public async Task<PostagemResponse?> UploadMediaAsync(Guid usuarioId, Guid postagemId, Stream fileStream, string fileName, string contentType)
     {
         var postagem = await _context.Postagens

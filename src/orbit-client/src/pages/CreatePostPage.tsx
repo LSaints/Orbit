@@ -1,20 +1,36 @@
-import { useState, type FormEvent } from 'react'
+import { useState, useRef, type FormEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { postagensService } from '@/api/postagens'
 
+interface MediaItem {
+  file: File
+  preview: string
+}
+
 export function CreatePostPage() {
   const navigate = useNavigate()
+  const fileInputRef = useRef<HTMLInputElement>(null)
   const [descricao, setDescricao] = useState('')
   const [categoriasInput, setCategoriasInput] = useState('')
-  const [files, setFiles] = useState<File[]>([])
-  const [previews, setPreviews] = useState<string[]>([])
+  const [medias, setMedias] = useState<MediaItem[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
   const handleFiles = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selected = Array.from(e.target.files ?? [])
-    setFiles(selected)
-    setPreviews(selected.map((f) => URL.createObjectURL(f)))
+    const newMedias = selected.map((file) => ({
+      file,
+      preview: URL.createObjectURL(file),
+    }))
+    setMedias((prev) => [...prev, ...newMedias])
+    if (fileInputRef.current) fileInputRef.current.value = ''
+  }
+
+  const removeMedia = (index: number) => {
+    setMedias((prev) => {
+      URL.revokeObjectURL(prev[index].preview)
+      return prev.filter((_, i) => i !== index)
+    })
   }
 
   const handleSubmit = async (e: FormEvent) => {
@@ -33,10 +49,20 @@ export function CreatePostPage() {
         categorias: categorias.length > 0 ? categorias : null,
       })
 
-      for (const file of files) {
-        await postagensService.uploadMedia(post.id, file)
+      if (medias.length > 0) {
+        try {
+          await postagensService.uploadMedias(
+            post.id,
+            medias.map((m) => m.file),
+          )
+        } catch {
+          for (const m of medias) {
+            await postagensService.uploadMedia(post.id, m.file)
+          }
+        }
       }
 
+      medias.forEach((m) => URL.revokeObjectURL(m.preview))
       navigate(`/postagens/${post.id}`)
     } catch {
       setError('Erro ao criar postagem')
@@ -44,6 +70,8 @@ export function CreatePostPage() {
       setLoading(false)
     }
   }
+
+  const isVideo = (file: File) => file.type.startsWith('video/')
 
   return (
     <div className="mx-auto max-w-lg">
@@ -69,6 +97,7 @@ export function CreatePostPage() {
         <div>
           <label className="mb-2 block text-sm text-zinc-400">Mídia</label>
           <input
+            ref={fileInputRef}
             type="file"
             accept="image/jpeg,image/png,image/webp,video/mp4,video/webm,video/ogg"
             multiple
@@ -77,10 +106,23 @@ export function CreatePostPage() {
           />
         </div>
 
-        {previews.length > 0 && (
+        {medias.length > 0 && (
           <div className="grid grid-cols-2 gap-2">
-            {previews.map((src, i) => (
-              <img key={i} src={src} alt="" className="rounded-lg object-cover" />
+            {medias.map((m, i) => (
+              <div key={i} className="group relative">
+                {isVideo(m.file) ? (
+                  <video src={m.preview} className="h-32 w-full rounded-lg object-cover" />
+                ) : (
+                  <img src={m.preview} alt="" className="h-32 w-full rounded-lg object-cover" />
+                )}
+                <button
+                  type="button"
+                  onClick={() => removeMedia(i)}
+                  className="absolute right-1 top-1 flex h-6 w-6 items-center justify-center rounded-full bg-black/60 text-xs text-white opacity-0 transition-opacity group-hover:opacity-100"
+                >
+                  ✕
+                </button>
+              </div>
             ))}
           </div>
         )}
@@ -89,7 +131,7 @@ export function CreatePostPage() {
 
         <button
           type="submit"
-          disabled={loading}
+          disabled={loading || medias.length === 0}
           className="w-full rounded-lg bg-white py-3 text-sm font-medium text-black transition-colors hover:bg-zinc-200 disabled:opacity-50"
         >
           {loading ? 'Publicando...' : 'Publicar'}

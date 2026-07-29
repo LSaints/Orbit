@@ -12,5 +12,6 @@ public interface IPostagemService
     Task<PostagemResponse?> UpdateAsync(Guid usuarioId, Guid postagemId, AtualizarPostagemRequest request);
     Task<bool> DeleteAsync(Guid usuarioId, Guid postagemId);
     Task<PostagemResponse?> UploadMediaAsync(Guid usuarioId, Guid postagemId, Stream fileStream, string fileName, string contentType);
+    Task<PostagemResponse?> UploadMediasAsync(Guid usuarioId, Guid postagemId, IReadOnlyList<(Stream FileStream, string FileName, string ContentType)> medias);
     Task<bool> RemoveMediaAsync(Guid usuarioId, Guid postagemId, Guid mediaId);
 }

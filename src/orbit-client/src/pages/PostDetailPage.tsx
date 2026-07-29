@@ -3,8 +3,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom'
 import { postagensService } from '@/api/postagens'
 import { useAuth } from '@/contexts/AuthContext'
 import type { PostagemResponse } from '@/types'
-
-const API_BASE = 'http://localhost:5033'
+import { MediaCarousel } from '@/components/MediaCarousel'
 
 export function PostDetailPage() {
   const { id } = useParams<{ id: string }>()
@@ -12,6 +11,7 @@ export function PostDetailPage() {
   const navigate = useNavigate()
   const [post, setPost] = useState<PostagemResponse | null>(null)
   const [loading, setLoading] = useState(true)
+  const [expanded, setExpanded] = useState(false)
 
   useEffect(() => {
     if (!id) return
@@ -61,29 +61,27 @@ export function PostDetailPage() {
         )}
       </div>
 
-      {post.descricao && (
-        <p className="whitespace-pre-wrap text-sm text-zinc-300">{post.descricao}</p>
-      )}
+      {post.medias.length > 0 && <MediaCarousel medias={post.medias} />}
 
-      <div className="space-y-3">
-        {post.medias.map((media) =>
-          media.tipo === 'video' ? (
-            <video
-              key={media.id}
-              src={`${API_BASE}/${media.url}`}
-              className="w-full rounded-lg"
-              controls
-            />
-          ) : (
-            <img
-              key={media.id}
-              src={`${API_BASE}/${media.url}`}
-              alt=""
-              className="w-full rounded-lg object-cover"
-            />
-          ),
-        )}
-      </div>
+      {post.descricao && (
+        <div className="overflow-hidden">
+          <p
+            className={`whitespace-pre-wrap break-words text-sm text-zinc-300 ${
+              !expanded ? 'line-clamp-3' : ''
+            }`}
+          >
+            {post.descricao}
+          </p>
+          {post.descricao.length > 150 && (
+            <button
+              onClick={() => setExpanded(!expanded)}
+              className="mt-1 text-xs text-zinc-500 hover:text-zinc-300"
+            >
+              {expanded ? 'ver menos' : 'ver mais'}
+            </button>
+          )}
+        </div>
+      )}
 
       {post.categorias.length > 0 && (
         <div className="flex flex-wrap gap-2">
