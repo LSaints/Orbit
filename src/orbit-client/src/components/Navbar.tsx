@@ -37,14 +37,16 @@ export function Navbar() {
           >
             Criar
           </Link>
-          <Link
-            to={`/perfil/${usuario?.id}`}
-            className={`text-sm transition-colors ${
-              location.pathname.startsWith('/perfil') ? 'text-white font-medium' : 'text-zinc-400 hover:text-white'
-            }`}
-          >
-            Perfil
-          </Link>
+          {usuario && (
+            <Link
+              to={`/perfil/${usuario.id}`}
+              className={`text-sm transition-colors ${
+                location.pathname.startsWith('/perfil') ? 'text-white font-medium' : 'text-zinc-400 hover:text-white'
+              }`}
+            >
+              Perfil
+            </Link>
+          )}
           <button
             onClick={handleLogout}
             className="text-sm text-zinc-500 transition-colors hover:text-red-400"

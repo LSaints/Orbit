@@ -20,13 +20,13 @@ public class PerfilService : IPerfilService
         return await _context.Perfils
             .Include(p => p.Usuario)
             .Where(p => p.UsuarioId == usuarioId)
-            .Select(p => new PerfilResponse(p.Id, p.UsuarioId, p.UrlImagemPerfil))
+            .Select(p => new PerfilResponse(p.Id, p.UsuarioId, p.UrlImagemPerfil,  p.Usuario))
             .FirstOrDefaultAsync();
     }
 
     public async Task<PerfilResponse?> UpdateAsync(Guid usuarioId, AtualizarPerfilRequest request)
     {
-        var perfil = await _context.Perfils
+        var perfil = await _context.Perfils.Include(perfil => perfil.Usuario)
             .FirstOrDefaultAsync(p => p.UsuarioId == usuarioId);
 
         if (perfil is null) return null;
@@ -34,6 +34,6 @@ public class PerfilService : IPerfilService
         perfil.UrlImagemPerfil = request.UrlImagemPerfil;
         await _context.SaveChangesAsync();
 
-        return new PerfilResponse(perfil.Id, perfil.UsuarioId, perfil.UrlImagemPerfil);
+        return new PerfilResponse(perfil.Id, perfil.UsuarioId, perfil.UrlImagemPerfil, perfil.Usuario);
     }
 }

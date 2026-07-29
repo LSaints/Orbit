@@ -41,7 +41,7 @@ export function PostDetailPage() {
     <div className="space-y-4">
       <div className="flex items-center gap-3">
         <Link to={`/perfil/${post.usuarioId}`} className="text-sm font-medium text-zinc-100 hover:underline">
-          {post.usuarioId.slice(0, 8)}
+          {post.usuario.nome}
         </Link>
         <span className="text-xs text-zinc-500">
           {new Date(post.dataCriacao).toLocaleDateString('pt-BR')}

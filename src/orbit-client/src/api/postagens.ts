@@ -14,6 +14,11 @@ export const postagensService = {
     return res.data
   },
 
+  async getByUsuarioId(usuarioId: string): Promise<PostagemResponse[]> {
+    const res = await api.get<PostagemResponse[]>(`/postagens/usuario/${usuarioId}`)
+    return res.data
+  },
+
   async getById(id: string): Promise<PostagemResponse> {
     const res = await api.get<PostagemResponse>(`/postagens/${id}`)
     return res.data

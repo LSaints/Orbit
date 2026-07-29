@@ -27,5 +27,10 @@ public class PostagemConfiguration : IEntityTypeConfiguration<Postagem>
             .WithOne()
             .HasForeignKey(e => e.PostagemId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasOne(e => e.Usuario)
+            .WithMany(u => u.Postages)
+            .HasForeignKey(e => e.UsuarioId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

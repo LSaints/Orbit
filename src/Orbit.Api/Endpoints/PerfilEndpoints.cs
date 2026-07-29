@@ -21,6 +21,12 @@ public static class PerfilEndpoints
             return perfil is not null ? Results.Ok(perfil) : Results.NotFound();
         });
 
+        group.MapGet("/{usuarioId:guid}", async (Guid usuarioId, IPerfilService service) =>
+        {
+            var perfil = await service.GetByUsuarioIdAsync(usuarioId);
+            return perfil is not null ? Results.Ok(perfil) : Results.NotFound();
+        });
+
         group.MapPut("/", async (AtualizarPerfilRequest request, ClaimsPrincipal user, IPerfilService service) =>
         {
             var usuarioId = Guid.Parse(user.FindFirstValue(ClaimTypes.NameIdentifier)!);

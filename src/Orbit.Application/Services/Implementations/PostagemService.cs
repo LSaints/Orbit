@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Orbit.Application.Requests.Postagem;
 using Orbit.Application.Responses.Postagem;
+using Orbit.Application.Responses.Usuario;
 using Orbit.Application.Services.Interfaces;
 using Orbit.Core.Domain;
 using Orbit.Infrastructure.Data;
@@ -45,6 +46,7 @@ public class PostagemService : IPostagemService
     public async Task<PostagemResponse?> GetByIdAsync(Guid id)
     {
         return await _context.Postagens
+            .Include(p => p.Usuario)
             .Include(p => p.Medias)
             .Where(p => p.Id == id)
             .Select(p => MapToResponse(p))
@@ -54,6 +56,7 @@ public class PostagemService : IPostagemService
     public async Task<List<PostagemResponse>> GetAllByUsuarioIdAsync(Guid usuarioId)
     {
         return await _context.Postagens
+            .Include(p => p.Usuario)
             .Include(p => p.Medias)
             .Where(p => p.UsuarioId == usuarioId)
             .OrderByDescending(p => p.DataCriacao)
@@ -64,6 +67,7 @@ public class PostagemService : IPostagemService
     public async Task<List<PostagemResponse>> GetAllAsync(int page = 1, int pageSize = 20)
     {
         return await _context.Postagens
+            .Include(p => p.Usuario)
             .Include(p => p.Medias)
             .OrderByDescending(p => p.DataCriacao)
             .Skip((page - 1) * pageSize)
@@ -93,6 +97,7 @@ public class PostagemService : IPostagemService
     public async Task<PostagemResponse?> UpdateAsync(Guid usuarioId, Guid postagemId, AtualizarPostagemRequest request)
     {
         var postagem = await _context.Postagens
+            .Include(p => p.Usuario)
             .Include(p => p.Categorias)
             .FirstOrDefaultAsync(p => p.Id == postagemId && p.UsuarioId == usuarioId);
 
@@ -118,6 +123,7 @@ public class PostagemService : IPostagemService
     public async Task<bool> DeleteAsync(Guid usuarioId, Guid postagemId)
     {
         var postagem = await _context.Postagens
+            .Include(p => p.Usuario)
             .Include(p => p.Medias)
             .FirstOrDefaultAsync(p => 
                 p.Id == postagemId && p.UsuarioId == usuarioId);
@@ -139,6 +145,7 @@ public class PostagemService : IPostagemService
     public async Task<PostagemResponse?> UploadMediaAsync(Guid usuarioId, Guid postagemId, Stream fileStream, string fileName, string contentType)
     {
         var postagem = await _context.Postagens
+            .Include(p => p.Usuario)
             .Include(p => p.Medias)
             .FirstOrDefaultAsync(p => p.Id == postagemId && p.UsuarioId == usuarioId);
 
@@ -209,6 +216,7 @@ public class PostagemService : IPostagemService
                 new PostagemMediaResponse(m.Id, m.Url, m.Tipo)).ToList(),
             p.Categorias.Select(c => 
                 new PostagemCategoriaResponse(c.Id, c.Descricao)).ToList(),
+            new UsuarioResponse(p.Usuario.Id, p.Usuario.Nome, p.Usuario.Email),
             p.DataCriacao,
             p.DataAtualizacao
         );

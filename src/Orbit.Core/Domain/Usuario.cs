@@ -10,6 +10,7 @@ public class Usuario
     public DateTime DataCadastro { get; set; }
     
     public Perfil Perfil { get; set; }
+    public List<Postagem> Postages { get; set; } = [];
 
     public Usuario(string nome, string email, string senha, DateTime dataNascimento)
     {

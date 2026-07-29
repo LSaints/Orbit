@@ -21,6 +21,12 @@ public static class PostagemEndpoints
             return Results.Ok(postagens);
         });
 
+        group.MapGet("/usuario/{usuarioId:guid}", async (Guid usuarioId, IPostagemService service) =>
+        {
+            var postagens = await service.GetAllByUsuarioIdAsync(usuarioId);
+            return Results.Ok(postagens);
+        });
+
         group.MapGet("/feed", async (int page, int pageSize, IPostagemService service) =>
         {
             var postagens = await service.GetAllAsync(page, pageSize);

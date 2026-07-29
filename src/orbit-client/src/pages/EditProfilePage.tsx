@@ -31,15 +31,17 @@ export function EditProfilePage() {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
+    if (!usuario) return
+
     if (!file) {
-      navigate(`/perfil/${usuario?.id}`)
+      navigate(`/perfil/${usuario.id}`)
       return
     }
 
     setSaving(true)
     await perfilService.uploadImage(file)
     setSaving(false)
-    navigate(`/perfil/${usuario?.id}`)
+    navigate(`/perfil/${usuario.id}`)
   }
 
   if (loading) {

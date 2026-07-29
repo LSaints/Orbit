@@ -1,4 +1,6 @@
+import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
+import { perfilService } from '@/api/perfil'
 import type { PostagemResponse } from '@/types'
 
 const API_BASE = 'http://localhost:5033'
@@ -15,13 +17,27 @@ function timeAgo(dateStr: string) {
 }
 
 export function PostCard({ post }: { post: PostagemResponse }) {
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
   const firstMedia = post.medias[0]
+
+  useEffect(() => {
+    perfilService.getById(post.usuarioId).then((p) => {
+      if (p.urlImagemPerfil) setAvatarUrl(p.urlImagemPerfil)
+    }).catch(() => {})
+  }, [post.usuarioId])
 
   return (
     <article className="rounded-xl border border-zinc-800 bg-zinc-900/50 p-4">
       <div className="mb-3 flex items-center gap-3">
-        <Link to={`/perfil/${post.usuarioId}`} className="text-sm font-medium text-zinc-100 hover:underline">
-          {post.usuarioId.slice(0, 8)}
+        <Link to={`/perfil/${post.usuarioId}`} className="flex items-center gap-2">
+          {avatarUrl ? (
+            <img src={`${API_BASE}/${avatarUrl}`} alt="" className="h-6 w-6 rounded-full object-cover" />
+          ) : (
+            <div className="flex h-6 w-6 items-center justify-center rounded-full bg-zinc-700 text-[10px] font-bold text-zinc-400">
+              {post.usuario.nome?.slice(0, 2).toUpperCase()}
+            </div>
+          )}
+          <span className="text-sm font-medium text-zinc-100 hover:underline">{post.usuario.nome}</span>
         </Link>
         <span className="text-xs text-zinc-500">{timeAgo(post.dataCriacao)}</span>
       </div>

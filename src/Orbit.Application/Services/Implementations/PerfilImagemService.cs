@@ -25,7 +25,9 @@ public class PerfilImagemService : IPerfilImagemService
 
         var url = _storageService.GetObjectUrl(objectName);
         var updated = await _perfilService.UpdateAsync(usuarioId,
-            new Application.Requests.Perfil.AtualizarPerfilRequest(url));
+            new Requests.Perfil.AtualizarPerfilRequest(url));
+        
+        Console.WriteLine(url);
 
         return updated;
     }

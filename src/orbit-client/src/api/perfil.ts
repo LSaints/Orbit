@@ -7,6 +7,11 @@ export const perfilService = {
     return res.data
   },
 
+  async getById(id: string): Promise<PerfilResponse> {
+    const res = await api.get<PerfilResponse>(`/perfil/${id}`)
+    return res.data
+  },
+
   async uploadImage(file: File): Promise<PerfilResponse> {
     const form = new FormData()
     form.append('file', file)

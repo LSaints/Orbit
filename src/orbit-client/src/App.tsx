@@ -21,8 +21,8 @@ export default function App() {
 
           <Route element={<ProtectedRoute><Layout /></ProtectedRoute>}>
             <Route path="/feed" element={<FeedPage />} />
-            <Route path="/perfil/:id" element={<ProfilePage />} />
             <Route path="/perfil/editar" element={<EditProfilePage />} />
+            <Route path="/perfil/:id" element={<ProfilePage />} />
             <Route path="/postagens/criar" element={<CreatePostPage />} />
             <Route path="/postagens/:id" element={<PostDetailPage />} />
             <Route path="/postagens/:id/editar" element={<EditPostPage />} />

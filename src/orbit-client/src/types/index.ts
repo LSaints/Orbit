@@ -38,6 +38,7 @@ export interface PerfilResponse {
   id: string
   usuarioId: string
   urlImagemPerfil: string
+  usuario: UsuarioResponse
 }
 
 export interface PostagemMediaResponse {
@@ -57,6 +58,7 @@ export interface PostagemResponse {
   descricao: string | null
   medias: PostagemMediaResponse[]
   categorias: PostagemCategoriaResponse[]
+  usuario: UsuarioResponse
   dataCriacao: string
   dataAtualizacao: string
 }

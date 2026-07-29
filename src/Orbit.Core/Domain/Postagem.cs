@@ -10,6 +10,7 @@ public class Postagem
     public DateTime DataCriacao { get; init; }
     public DateTime DataAtualizacao { get; set; }
 
+    public Usuario Usuario { get; set; }
     public Postagem(Guid usuarioId, string? descricao = null)
     {
         Id = Guid.NewGuid();

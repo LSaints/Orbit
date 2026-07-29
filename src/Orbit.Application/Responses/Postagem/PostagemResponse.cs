@@ -1,3 +1,5 @@
+using Orbit.Application.Responses.Usuario;
+
 namespace Orbit.Application.Responses.Postagem;
 
 public record PostagemResponse(
@@ -6,6 +8,7 @@ public record PostagemResponse(
     string? Descricao,
     List<PostagemMediaResponse> Medias,
     List<PostagemCategoriaResponse> Categorias,
+    UsuarioResponse Usuario,
     DateTime DataCriacao,
     DateTime DataAtualizacao
 );

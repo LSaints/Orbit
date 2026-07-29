@@ -6,7 +6,9 @@ import { useAuth } from '@/contexts/AuthContext'
 import type { PostagemResponse, PerfilResponse } from '@/types'
 import { PostCard } from '@/components/PostCard'
 
-const API_BASE = 'http://localhost:9000'
+const API_BASE = 'http://localhost:5033'
+
+const GUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 
 export function ProfilePage() {
   const { id } = useParams<{ id: string }>()
@@ -18,40 +20,39 @@ export function ProfilePage() {
   const isOwnProfile = usuario?.id === id
 
   useEffect(() => {
-    if (!id) return
+    if (!id || !GUID_RE.test(id)) return
     setLoading(true)
 
     Promise.all([
-      isOwnProfile ? perfilService.get().catch(() => null) : Promise.resolve(null),
-      postagensService.getMine(),
+      perfilService.getById(id).catch(() => null),
+      postagensService.getByUsuarioId(id).catch(() => [] as PostagemResponse[]),
     ]).then(([perfilData, postsData]) => {
       setPerfil(perfilData)
-      setPosts(postsData.filter((p) => p.usuarioId === id))
+      setPosts(postsData)
       setLoading(false)
     })
-  }, [id, isOwnProfile])
+  }, [id])
 
   if (loading) {
     return <p className="py-12 text-center text-sm text-zinc-500">Carregando...</p>
   }
-  console.log(perfil)
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-4">
         {perfil?.urlImagemPerfil ? (
           <img
-            src={`${API_BASE}/${perfil.urlImagemPerfil}`}
+            src={`${API_BASE}${perfil.urlImagemPerfil}`}
             alt="Perfil"
             className="h-20 w-20 rounded-full object-cover"
           />
         ) : (
           <div className="flex h-20 w-20 items-center justify-center rounded-full bg-zinc-800 text-2xl font-bold text-zinc-500">
-            {id?.slice(0, 2).toUpperCase()}
+            {perfil?.usuario.nome?.slice(0, 2).toUpperCase()}
           </div>
         )}
 
         <div>
-          <h2 className="text-lg font-semibold text-white">{id?.slice(0, 8)}</h2>
+          <h2 className="text-lg font-semibold text-white">{perfil?.usuario.nome}</h2>
           <p className="text-sm text-zinc-500">{posts.length} postagens</p>
         </div>
 
