@@ -1,5 +1,4 @@
 using System.Security.Claims;
-using Microsoft.AspNetCore.Authorization;
 using Orbit.Application.Requests.Postagem;
 using Orbit.Application.Services.Interfaces;
 using Orbit.Application.Services.Implementations;
@@ -39,14 +38,16 @@ public static class PostagemEndpoints
             return postagem is not null ? Results.Ok(postagem) : Results.NotFound();
         });
 
-        group.MapPost("/", async (CriarPostagemRequest request, ClaimsPrincipal user, IPostagemService service) =>
+        group.MapPost("/", async (
+            CriarPostagemRequest request, ClaimsPrincipal user, IPostagemService service) =>
         {
             var usuarioId = Guid.Parse(user.FindFirstValue(ClaimTypes.NameIdentifier)!);
             var postagem = await service.CreateAsync(usuarioId, request);
             return Results.Created($"/postagens/{postagem.Id}", postagem);
         });
 
-        group.MapPut("/{id:guid}", async (Guid id, AtualizarPostagemRequest request, ClaimsPrincipal user, IPostagemService service) =>
+        group.MapPut("/{id:guid}", async (
+            Guid id, AtualizarPostagemRequest request, ClaimsPrincipal user, IPostagemService service) =>
         {
             var usuarioId = Guid.Parse(user.FindFirstValue(ClaimTypes.NameIdentifier)!);
             var postagem = await service.UpdateAsync(usuarioId, id, request);
@@ -60,7 +61,8 @@ public static class PostagemEndpoints
             return deleted ? Results.NoContent() : Results.NotFound();
         });
 
-        group.MapPost("/{id:guid}/medias", async (Guid id, HttpContext httpContext, ClaimsPrincipal user, IPostagemService service) =>
+        group.MapPost("/{id:guid}/medias", async (
+            Guid id, HttpContext httpContext, ClaimsPrincipal user, IPostagemService service) =>
         {
             var usuarioId = Guid.Parse(user.FindFirstValue(ClaimTypes.NameIdentifier)!);
 
@@ -95,7 +97,8 @@ public static class PostagemEndpoints
             return postagem is not null ? Results.Ok(postagem) : Results.NotFound();
         }).DisableAntiforgery();
 
-        group.MapPost("/{id:guid}/media", async (Guid id, IFormFile file, ClaimsPrincipal user, IPostagemService service) =>
+        group.MapPost("/{id:guid}/media", async (
+            Guid id, IFormFile file, ClaimsPrincipal user, IPostagemService service) =>
         {
             var usuarioId = Guid.Parse(user.FindFirstValue(ClaimTypes.NameIdentifier)!);
 
@@ -103,18 +106,57 @@ public static class PostagemEndpoints
                 return Results.BadRequest(new { error = "Arquivo vazio" });
 
             if (!PostagemService.IsValidMediaType(file.ContentType))
-                return Results.BadRequest(new { error = "Tipo de arquivo não permitido. Use JPG, PNG, WebP, MP4, WebM ou OGG" });
+                return Results.BadRequest(new
+                {
+                    error = "Tipo de arquivo não permitido. Use JPG, PNG, WebP, MP4, WebM ou OGG"
+                });
 
             using var stream = file.OpenReadStream();
             var postagem = await service.UploadMediaAsync(usuarioId, id, stream, file.FileName, file.ContentType);
             return postagem is not null ? Results.Ok(postagem) : Results.NotFound();
         }).DisableAntiforgery();
 
-        group.MapDelete("/{id:guid}/media/{mediaId:guid}", async (Guid id, Guid mediaId, ClaimsPrincipal user, IPostagemService service) =>
+        group.MapDelete("/{id:guid}/media/{mediaId:guid}", async (
+            Guid id, Guid mediaId, ClaimsPrincipal user, IPostagemService service) =>
         {
             var usuarioId = Guid.Parse(user.FindFirstValue(ClaimTypes.NameIdentifier)!);
             var removed = await service.RemoveMediaAsync(usuarioId, id, mediaId);
             return removed ? Results.NoContent() : Results.NotFound();
+        });
+        
+        group.MapPost("/curtir", async (Guid postagemId, ClaimsPrincipal user, IPostagemEventoService service) =>
+        {
+            var usuarioId = Guid.Parse(user.FindFirstValue(ClaimTypes.NameIdentifier)!);
+            var evento = await service.CurtirPostagemAsync(usuarioId, postagemId);
+            return Results.Created($"/postagens/{postagemId}/eventos/{evento.Id}", evento);
+        });
+        
+        group.MapPost("/descurtir", async (
+            Guid postagemId, ClaimsPrincipal user, IPostagemEventoService service) =>
+        {
+            var usuarioId = Guid.Parse(user.FindFirstValue(ClaimTypes.NameIdentifier)!);
+            var evento = await service.DescutirPostagemAsync(usuarioId, postagemId);
+            return Results.Created($"/postagens/{postagemId}/eventos/{evento.Id}", evento);
+        });
+        
+        group.MapGet("/eventos", async (Guid postagemId, IPostagemEventoService service) =>
+        {
+            var eventos = await service.GetAllByPostagemIdAsync(postagemId);
+            return Results.Ok(eventos);
+        });
+
+        group.MapGet("/eventos/{id:guid}", async (Guid postagemId, Guid id, IPostagemEventoService service) =>
+        {
+            var evento = await service.GetByIdAsync(id);
+            return evento is not null ? Results.Ok(evento) : Results.NotFound();
+        });
+
+        group.MapGet("/eventos/meu-evento", async (
+            Guid postagemId, ClaimsPrincipal user, IPostagemEventoService service) =>
+        {
+            var usuarioId = Guid.Parse(user.FindFirstValue(ClaimTypes.NameIdentifier)!);
+            var evento = await service.GetByPostagemEUsuarioAsync(postagemId, usuarioId);
+            return evento is not null ? Results.Ok(evento) : Results.NotFound();
         });
     }
 }

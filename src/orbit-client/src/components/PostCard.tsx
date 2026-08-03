@@ -4,6 +4,7 @@ import { perfilService } from '@/api/perfil'
 import { postagensEventosService } from '@/api/postagensEventos'
 import type { PostagemResponse } from '@/types'
 import { MediaCarousel } from '@/components/MediaCarousel'
+import { Comentarios } from '@/components/Comentarios'
 
 const API_BASE = 'http://localhost:5033'
 
@@ -129,6 +130,8 @@ export function PostCard({ post }: { post: PostagemResponse }) {
           <span>{curtidas - descurtidas}</span>
         </button>
       </div>
+
+      <Comentarios postagemId={post.id} collapsible />
     </article>
   )
 }

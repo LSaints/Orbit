@@ -24,6 +24,14 @@ export interface AtualizarPostagemRequest {
   categorias: string[] | null
 }
 
+export interface CriarComentarioRequest {
+  conteudo: string
+}
+
+export interface CriarRespostaRequest {
+  conteudo: string
+}
+
 export interface LoginTokenResponse {
   token: string
 }
@@ -70,4 +78,15 @@ export interface PostagemResponse {
   usuario: UsuarioResponse
   dataCriacao: string
   dataAtualizacao: string
+}
+
+export interface ComentarioResponse {
+  id: string
+  postagemId: string
+  comentarioPaiId: string | null
+  usuarioId: string
+  usuario: UsuarioResponse
+  conteudo: string
+  dataCriacao: string
+  respostas: ComentarioResponse[]
 }

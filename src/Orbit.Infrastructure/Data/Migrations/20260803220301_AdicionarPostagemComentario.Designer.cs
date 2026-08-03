@@ -2,18 +2,21 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Orbit.Infrastructure.Data;
 
 #nullable disable
 
-namespace Orbit.Infrastructure.Migrations
+namespace Orbit.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(OrbitDbContext))]
-    partial class OrbitDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260803220301_AdicionarPostagemComentario")]
+    partial class AdicionarPostagemComentario
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -41,7 +44,7 @@ namespace Orbit.Infrastructure.Migrations
                     b.HasIndex("UsuarioId")
                         .IsUnique();
 
-                    b.ToTable("Perfils", (string)null);
+                    b.ToTable("Perfils");
                 });
 
             modelBuilder.Entity("Orbit.Core.Domain.Postagem", b =>
@@ -67,7 +70,7 @@ namespace Orbit.Infrastructure.Migrations
 
                     b.HasIndex("UsuarioId");
 
-                    b.ToTable("Postagens", (string)null);
+                    b.ToTable("Postagens");
                 });
 
             modelBuilder.Entity("Orbit.Core.Domain.PostagemCategoria", b =>
@@ -91,7 +94,7 @@ namespace Orbit.Infrastructure.Migrations
 
                     b.HasIndex("PostagemId");
 
-                    b.ToTable("PostagemCategorias", (string)null);
+                    b.ToTable("PostagemCategorias");
                 });
 
             modelBuilder.Entity("Orbit.Core.Domain.PostagemComentario", b =>
@@ -122,7 +125,7 @@ namespace Orbit.Infrastructure.Migrations
 
                     b.HasIndex("UsuarioId");
 
-                    b.ToTable("PostagemComentario", (string)null);
+                    b.ToTable("PostagemComentario");
                 });
 
             modelBuilder.Entity("Orbit.Core.Domain.PostagemMedia", b =>
@@ -148,7 +151,7 @@ namespace Orbit.Infrastructure.Migrations
 
                     b.HasIndex("PostagemId");
 
-                    b.ToTable("PostagemMedias", (string)null);
+                    b.ToTable("PostagemMedias");
                 });
 
             modelBuilder.Entity("Orbit.Core.Domain.PostagensEventos", b =>
@@ -177,7 +180,7 @@ namespace Orbit.Infrastructure.Migrations
 
                     b.HasIndex("UsuarioId");
 
-                    b.ToTable("PostagensEventos", (string)null);
+                    b.ToTable("PostagensEventos");
                 });
 
             modelBuilder.Entity("Orbit.Core.Domain.Usuario", b =>
@@ -209,7 +212,7 @@ namespace Orbit.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Usuarios", (string)null);
+                    b.ToTable("Usuarios");
                 });
 
             modelBuilder.Entity("Orbit.Core.Domain.Perfil", b =>

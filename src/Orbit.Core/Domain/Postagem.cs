@@ -8,6 +8,7 @@ public class Postagem
     public List<PostagemMedia> Medias { get; set; } = [];
     public List<PostagemCategoria> Categorias { get; set; } = [];
     public List<PostagensEventos> Eventos { get; set; } = [];
+    public List<PostagemComentario> Comentarios { get; set; } = [];
     public DateTime DataCriacao { get; init; }
     public DateTime DataAtualizacao { get; set; }
 

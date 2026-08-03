@@ -5,6 +5,7 @@ import { postagensEventosService } from '@/api/postagensEventos'
 import { useAuth } from '@/contexts/AuthContext'
 import type { PostagemResponse } from '@/types'
 import { MediaCarousel } from '@/components/MediaCarousel'
+import { Comentarios } from '@/components/Comentarios'
 
 export function PostDetailPage() {
   const { id } = useParams<{ id: string }>()
@@ -140,6 +141,8 @@ export function PostDetailPage() {
           <span>{curtidas - descurtidas}</span>
         </button>
       </div>
+
+      <Comentarios postagemId={post.id} />
     </div>
   )
 }

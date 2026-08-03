@@ -11,6 +11,7 @@ public class Usuario
     
     public Perfil Perfil { get; set; }
     public List<Postagem> Postages { get; set; } = [];
+    public List<PostagemComentario> PostagemComentarios { get; set; } = [];
 
     public Usuario(string nome, string email, string senha, DateTime dataNascimento)
     {

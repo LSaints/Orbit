@@ -1,8 +1,8 @@
 namespace Orbit.Core.Enums;
 
-public enum TipoEventoPostagem
+public enum TipoEventoComentarioPostagem
 {
     Curtir,
     Descutir,
-    Comentar,
+    Responder,
 }
