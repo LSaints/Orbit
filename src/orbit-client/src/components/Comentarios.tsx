@@ -17,9 +17,13 @@ function timeAgo(dateStr: string) {
 export function Comentarios({
   postagemId,
   collapsible = false,
+  totalComentarios,
+  onComentarioAdicionado,
 }: {
   postagemId: string
   collapsible?: boolean
+  totalComentarios?: number
+  onComentarioAdicionado?: () => void
 }) {
   const [comentarios, setComentarios] = useState<ComentarioResponse[]>([])
   const [aberto, setAberto] = useState(!collapsible)
@@ -57,6 +61,7 @@ export function Comentarios({
         setAberto(true)
       }
       load()
+      onComentarioAdicionado?.()
     } catch {
       setErro('Não foi possível publicar o comentário')
     }
@@ -73,6 +78,7 @@ export function Comentarios({
       })
       setRespondendo(null)
       load()
+      onComentarioAdicionado?.()
     } catch {
       setErro('Não foi possível publicar a resposta')
     }
@@ -88,7 +94,7 @@ export function Comentarios({
             onClick={handleToggle}
             className="text-xs text-zinc-500 transition-colors hover:text-zinc-300"
           >
-            {aberto ? 'Ocultar comentários' : `Ver comentários${carregado ? ` (${comentarios.length})` : ''}`}
+            {aberto ? 'Ocultar comentários' : `Ver comentários (${totalComentarios ?? comentarios.length})`}
           </button>
         )}
       </div>
@@ -115,7 +121,7 @@ export function Comentarios({
       {aberto && (comentarios.length === 0 ? (
         <p className="py-6 text-center text-sm text-zinc-500">Nenhum comentário ainda</p>
       ) : (
-        <ul className="space-y-4">
+        <ul className="max-h-80 space-y-4 overflow-y-auto pr-1">
           {comentarios.map((comentario) => (
             <CommentItem
               key={comentario.id}

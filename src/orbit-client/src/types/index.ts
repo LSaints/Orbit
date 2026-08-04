@@ -64,7 +64,7 @@ export interface PostagemEventoResponse {
   id: string
   postagemId: string
   usuarioId: string
-  tipoEventoPostagem: 'Curtir' | 'Descutir'
+  tipoEventoPostagem: 'Curtir' | 'Descutir' | 'Comentar'
   usuario: UsuarioResponse
   dataEmissao: string
 }

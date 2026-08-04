@@ -43,10 +43,10 @@ export function ProfilePage() {
           <img
             src={`${API_BASE}${perfil.urlImagemPerfil}`}
             alt="Perfil"
-            className="h-20 w-20 rounded-full object-cover"
+            className="h-24 w-24 rounded-full object-cover ring-4 ring-emerald-500/60 ring-offset-2 ring-offset-zinc-950"
           />
         ) : (
-          <div className="flex h-20 w-20 items-center justify-center rounded-full bg-zinc-800 text-2xl font-bold text-zinc-500">
+          <div className="flex h-24 w-24 items-center justify-center rounded-full bg-zinc-800 text-3xl font-bold text-zinc-500 ring-4 ring-emerald-500/60 ring-offset-2 ring-offset-zinc-950">
             {perfil?.usuario.nome?.slice(0, 2).toUpperCase()}
           </div>
         )}

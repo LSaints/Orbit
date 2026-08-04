@@ -4,6 +4,7 @@ using Orbit.Application.Responses.Comentarios;
 using Orbit.Application.Responses.Usuario;
 using Orbit.Application.Services.Interfaces;
 using Orbit.Core.Domain;
+using Orbit.Core.Enums;
 using Orbit.Infrastructure.Data;
 
 namespace Orbit.Application.Services.Implementations;
@@ -24,6 +25,8 @@ public class ComentarioService : IComentarioService
         _context.PostagemComentarios.Add(comentario);
         await _context.SaveChangesAsync();
 
+        await RegistrarEventoComentarioAsync(postagemId, usuarioId);
+
         return await GetByIdAsync(comentario.Id)
                ?? MapToResponse(comentario);
     }
@@ -35,6 +38,8 @@ public class ComentarioService : IComentarioService
         _context.PostagemComentarios.Add(comentario);
         await _context.SaveChangesAsync();
 
+        await RegistrarEventoComentarioAsync(postagemId, usuarioId);
+
         return await GetByIdAsync(comentario.Id)
                ?? MapToResponse(comentario);
     }
@@ -44,7 +49,7 @@ public class ComentarioService : IComentarioService
         var comentarios = await _context.PostagemComentarios
             .Include(c => c.Usuario)
             .Where(c => c.PostagemId == postagemId)
-            .OrderBy(c => c.DataCriacao)
+            .OrderByDescending(c => c.DataCriacao)
             .ToListAsync();
 
         var filhosPorPai = comentarios
@@ -92,5 +97,13 @@ public class ComentarioService : IComentarioService
             c.DataCriacao,
             []
         );
+    }
+
+    private async Task RegistrarEventoComentarioAsync(Guid postagemId, Guid usuarioId)
+    {
+        var evento = new PostagensEventos(postagemId, usuarioId, TipoEventoPostagem.Comentar);
+
+        _context.PostagensEventos.Add(evento);
+        await _context.SaveChangesAsync();
     }
 }

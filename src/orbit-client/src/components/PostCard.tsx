@@ -25,7 +25,8 @@ export function PostCard({ post }: { post: PostagemResponse }) {
   const [expanded, setExpanded] = useState(false)
   const [curtidas, setCurtidas] = useState(0)
   const [descurtidas, setDescurtidas] = useState(0)
-  const [meuEvento, setMeuEvento] = useState<'Curtir' | 'Descutir' | null>(null)
+  const [comentarios, setComentarios] = useState(0)
+  const [meuEvento, setMeuEvento] = useState<'Curtir' | 'Descutir' | 'Comentar' | null>(null)
   const [loadingEvento, setLoadingEvento] = useState(false)
 
   useEffect(() => {
@@ -41,6 +42,7 @@ export function PostCard({ post }: { post: PostagemResponse }) {
     ]).then(([eventos, meu]) => {
       setCurtidas(eventos.filter((e) => e.tipoEventoPostagem === 'Curtir').length)
       setDescurtidas(eventos.filter((e) => e.tipoEventoPostagem === 'Descutir').length)
+      setComentarios(eventos.filter((e) => e.tipoEventoPostagem === 'Comentar').length)
       setMeuEvento(meu?.tipoEventoPostagem ?? null)
     }).catch(() => {})
   }, [post.id])
@@ -129,9 +131,18 @@ export function PostCard({ post }: { post: PostagemResponse }) {
           </svg>
           <span>{curtidas - descurtidas}</span>
         </button>
+        <button
+          onClick={() => navigate(`/postagens/${post.id}`)}
+          className="flex items-center gap-1.5 text-sm text-zinc-500 transition-colors hover:text-emerald-400"
+        >
+          <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.86 9.86 0 0 1-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+          </svg>
+          <span>{comentarios}</span>
+        </button>
       </div>
 
-      <Comentarios postagemId={post.id} collapsible />
+      <Comentarios postagemId={post.id} collapsible totalComentarios={comentarios} onComentarioAdicionado={() => setComentarios((c) => c + 1)} />
     </article>
   )
 }
